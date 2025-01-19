@@ -1,0 +1,15 @@
+I:\Desktop\DLL\WinAPI\Reader\bin\Release\Reader.dll
+I:\Desktop\DLL\WinAPI\Reader\bin\Release\Reader.pdb
+I:\Desktop\DLL\WinAPI\Reader\bin\Release\WInAPI.dll
+I:\Desktop\DLL\WinAPI\Reader\obj\Release\Reader.csproj.AssemblyReference.cache
+I:\Desktop\DLL\WinAPI\Reader\obj\Release\Reader.csproj.CoreCompileInputs.cache
+I:\Desktop\DLL\WinAPI\Reader\obj\Release\Reader.csproj.CopyComplete
+I:\Desktop\DLL\WinAPI\Reader\obj\Release\Reader.dll
+I:\Desktop\DLL\WinAPI\Reader\obj\Release\Reader.pdb
+D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\bin\Release\Reader.dll
+D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\bin\Release\Reader.pdb
+D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\Release\Reader.csproj.AssemblyReference.cache
+D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\Release\Reader.csproj.CoreCompileInputs.cache
+D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\Release\Reader.csproj.CopyComplete
+D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\Release\Reader.dll
+D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\Release\Reader.pdb
