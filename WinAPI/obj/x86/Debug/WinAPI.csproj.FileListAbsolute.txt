@@ -1,6 +1,0 @@
-D:\.NET MY FILES\DLL\Sources\WinAPI\WinAPI\bin\x86\Debug\WinAPI.dll
-D:\.NET MY FILES\DLL\Sources\WinAPI\WinAPI\bin\x86\Debug\WinAPI.pdb
-D:\.NET MY FILES\DLL\Sources\WinAPI\WinAPI\obj\x86\Debug\WinAPI.csproj.AssemblyReference.cache
-D:\.NET MY FILES\DLL\Sources\WinAPI\WinAPI\obj\x86\Debug\WinAPI.csproj.CoreCompileInputs.cache
-D:\.NET MY FILES\DLL\Sources\WinAPI\WinAPI\obj\x86\Debug\WinAPI.dll
-D:\.NET MY FILES\DLL\Sources\WinAPI\WinAPI\obj\x86\Debug\WinAPI.pdb

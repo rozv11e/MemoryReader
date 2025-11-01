@@ -1,9 +1,0 @@
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\bin\x86\Debug\Reader.dll
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\bin\x86\Debug\Reader.pdb
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\bin\x86\Debug\WinAPI.dll
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\bin\x86\Debug\WinAPI.pdb
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\x86\Debug\Reader.csproj.AssemblyReference.cache
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\x86\Debug\Reader.csproj.CoreCompileInputs.cache
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\x86\Debug\Reader.csproj.CopyComplete
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\x86\Debug\Reader.dll
-D:\.NET MY FILES\DLL\Sources\WinAPI\Reader\obj\x86\Debug\Reader.pdb

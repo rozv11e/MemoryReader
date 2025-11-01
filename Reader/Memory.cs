@@ -1,14 +1,19 @@
-﻿using System;
+﻿using Reader.Imports;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO.Ports;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using WinAPI;
+using System.Text;
+using static Reader.Imports.NativeAPI;
+using static Reader.Imports.WinAPI;
 
 namespace Reader
 {
-    public class Memory
+    public unsafe class Memory
     {
         private readonly Process process;
         public Memory(Process process)
@@ -28,78 +33,74 @@ namespace Reader
             return IntPtr.Zero;
         }
 
-        public byte[] ReadRaw(IntPtr MemoryAddress, uint Len)
+        public string ReadString(IntPtr address, int maxLength = 256)
         {
-            return ReadProcessMemory(MemoryAddress, Len);
+            byte[] buffer = ReadBytes(address, (uint)maxLength);
+            if (buffer == null) return null;
+
+            int stringLength = Array.IndexOf(buffer, (byte)0);
+            if (stringLength < 0) stringLength = buffer.Length;
+
+            return Encoding.ASCII.GetString(buffer, 0, stringLength);
+
         }
 
-        public string ReadString(IntPtr MemoryAddress)
+        public string ReadUnicodeString(IntPtr address, int maxLength = 256)
         {
-            string text = "";
-            byte[] array = new byte[1];
-            array = ReadProcessMemory(MemoryAddress, 1u);
-            while (array[0] != 0)
+            byte[] buffer = ReadBytes(address, (uint)(maxLength * 2)); // 2 байта на символ
+            if (buffer == null) return null;
+
+            int stringLength = 0;
+            while (stringLength + 1 < buffer.Length)
             {
-                text += (char)array[0];
-                MemoryAddress = IntPtr.Add(MemoryAddress, 1); // Use IntPtr.Add instead of casting to int
-                array = ReadProcessMemory(MemoryAddress, 1u);
+                if (buffer[stringLength] == 0 && buffer[stringLength + 1] == 0)
+                    break;
+                stringLength += 2;
             }
 
-            return text;
+            return Encoding.Unicode.GetString(buffer, 0, stringLength);
         }
 
-        public string ReadString(IntPtr MemoryAddress, uint Len)
+        public float ReadFloat(IntPtr address)
         {
-            string text = "";
-            byte[] array = ReadProcessMemory(MemoryAddress, Len);
-            for (int i = 0; i > Len; i++)
-            {
-                text += (char)array[i];
-            }
-
-            return text;
+            Read<float>(address, out var value);
+            return value;
         }
 
-        public float ReadFloat(IntPtr Address)
+        public uint ReadUInt32(IntPtr address)
         {
-            byte[] value = ReadProcessMemory(Address, 4u);
-            return BitConverter.ToSingle(value, 0);
+            Read<uint>(address, out var value);
+            return value;
         }
 
-        public uint ReadUInt32(IntPtr MemoryAddress)
+        public ulong ReadUInt64(IntPtr address)
         {
-            byte[] value = ReadProcessMemory(MemoryAddress, 4u);
-            return BitConverter.ToUInt32(value, 0);
+            Read<ulong>(address, out var value);
+            return value;
         }
 
-        public ulong ReadUInt64(IntPtr MemoryAddress)
+        public int ReadInt32(IntPtr address)
         {
-            byte[] value = ReadProcessMemory(MemoryAddress, 8u);
-            return BitConverter.ToUInt64(value, 0);
+            Read<int>(address, out var value);
+            return value;
         }
 
-        public int ReadInt32(IntPtr MemoryAddress)
+        public long ReadInt64(IntPtr address)
         {
-            byte[] value = ReadProcessMemory(MemoryAddress, 4u);
-            return BitConverter.ToInt32(value, 0);
+            Read<long>(address, out var value);
+            return value;
         }
 
-        public long ReadInt64(IntPtr MemoryAddress)
+        public ulong ReadULong(IntPtr address)
         {
-            byte[] value = ReadProcessMemory(MemoryAddress, 8u);
-            return BitConverter.ToInt64(value, 0);
+            Read<ulong>(address, out var value);
+            return value;
         }
 
-        public ulong ReadULong(IntPtr MemoryAddress)
+        public long ReadLong(IntPtr address)
         {
-            byte[] value = ReadProcessMemory(MemoryAddress, 8u);
-            return BitConverter.ToUInt64(value, 0);
-        }
-
-        public long ReadLong(IntPtr MemoryAddress)
-        {
-            byte[] value = ReadProcessMemory(MemoryAddress, 8u);
-            return BitConverter.ToInt64(value, 0);
+            Read<long>(address, out var value);
+            return value;
         }
 
         public Vector3 ReadVec3(IntPtr MemoryAddress)
@@ -111,10 +112,19 @@ namespace Reader
             return new Vector3(x, y, z);
         }
 
-        public byte[] ReadBytes(IntPtr addy, uint bytes)
+        public byte[] ReadBytes(IntPtr address, uint length)
         {
-            var array = ReadProcessMemory(addy, bytes);
-            return array;
+            byte[] buffer = new byte[length];
+
+            fixed (byte* pBuffer = buffer)
+            {
+                if (ReadProcessMemory(process.Handle, address, pBuffer, length, out _))
+                {
+                    return buffer;
+                }
+            }
+
+            return null;
         }
         public float[] ReadMatrix(IntPtr address)
         {
@@ -139,72 +149,70 @@ namespace Reader
             return array2;
         }
 
-        public IntPtr[] ReadArray<T>(IntPtr address, uint count)
-        {
-            byte[] buffer = new byte[count * Marshal.SizeOf(typeof(T))];
+        //public IntPtr[] ReadArray<T>(IntPtr address, uint count)
+        //{
+        //    byte[] buffer = new byte[count * Marshal.SizeOf(typeof(T))];
 
-            var pArray = ReadProcessMemory(address, (uint)buffer.Length);
+        //    var pArray = ReadProcessMemory(address, (uint)buffer.Length);
 
-            IntPtr[] intptrArray = new IntPtr[pArray.Length / IntPtr.Size];
+        //    IntPtr[] intptrArray = new IntPtr[pArray.Length / IntPtr.Size];
 
-            for (int i = 0; i < intptrArray.Length; i++)
-            {
-                intptrArray[i] = (IntPtr)BitConverter.ToInt64(pArray, i * IntPtr.Size);
-            }
+        //    for (int i = 0; i < intptrArray.Length; i++)
+        //    {
+        //        intptrArray[i] = (IntPtr)BitConverter.ToInt64(pArray, i * IntPtr.Size);
+        //    }
 
-            return intptrArray;
-        }
+        //    return intptrArray;
+        //}
 
         public byte ReadByte(IntPtr address)
         {
-            byte[] buffer = ReadProcessMemory(address, 1);
-            return buffer[0];
+            Read<byte>(address, out var value);
+            return value;
         }
-
-        public short ReadShort(IntPtr address)
-        {
-            var value = ReadProcessMemory(address, 2u);
-            return BitConverter.ToInt16(value, 0);
-        }
-
-        public char ReadChar(IntPtr address)
-        {
-            var value = ReadProcessMemory(address, 1u);
-            return BitConverter.ToChar(value, 0);
-        }
-
-        //public IntPtr ReadPointer(IntPtr MemoryAddress)
-        //{
-        //    byte[] value = ReadProcessMemory(MemoryAddress, 8u);
-
-        //    if (value.Length != 8)
-        //    {
-        //        return IntPtr.Zero;
-        //    }
-
-        //    var longValue = BitConverter.ToInt64(value, 0);
-        //    return (IntPtr)longValue;
-        //}
 
         public IntPtr ReadPointer(IntPtr address)
         {
-            var value = ReadProcessMemory(address, 4u);
-            return (IntPtr)BitConverter.ToInt32(value, 0);
+            Read<IntPtr>(address, out var value);
+            return value;
         }
 
-        public byte[] ReadProcessMemory(IntPtr MemoryAddress, uint bytesToRead)
+        public T ReadStruct<T>(IntPtr address) where T : unmanaged
         {
-            byte[] array = new byte[bytesToRead];
-            if (process == null)
+            Read<T>(address, out var value);
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe bool Read<T>(IntPtr MemoryAddress, out T value) where T : unmanaged
+        {
+            int size = sizeof(T);
+
+            fixed (byte* pBuffer = new byte[size])
             {
-                return array;
+                if (ReadProcessMemory(process.Handle, MemoryAddress, pBuffer, (uint)size, out var _))
+                {
+                    value = *(T*)pBuffer;
+                    return true;
+                }
             }
 
-            WinImports.ReadProcessMemory(process.Handle, MemoryAddress, array, bytesToRead, out var _);
-            return array;
+            value = default;
+            return false;
         }
 
-        // Write
+        public bool Write<T>(IntPtr address, T value) where T : unmanaged
+        {
+            uint size = (uint)sizeof(T);
+            byte[] buffer = new byte[size];
+
+            fixed (byte* pBuffer = buffer)
+            {
+                *(T*)pBuffer = value;
+            }
+
+            return WriteProcessMemory(process.Handle, address, buffer, size, out _);
+        }
 
         public bool WriteFloat(IntPtr address, float value)
         {
@@ -213,28 +221,117 @@ namespace Reader
 
         public bool WriteBytes(IntPtr address, byte[] newbytes)
         {
-            return WinImports.WriteProcessMemory(process.Handle, address, newbytes, (uint)newbytes.Length, out var _);
+            return WriteProcessMemory(process.Handle, address, newbytes, (uint)newbytes.Length, out var _);
+        }
+
+        public bool ZeroMemory(IntPtr address, int size)
+        {
+            byte[] zeros = new byte[size];
+            return WriteBytes(address, zeros);
+        }
+
+        public bool PatchMemory<T>(IntPtr address, T data) where T : unmanaged
+        {
+            if (address == IntPtr.Zero)
+                return false;
+
+            IntPtr size = (IntPtr)sizeof(T);
+
+            uint oldProtect;
+
+            var status = NtProtectVirtualMemory(process.Handle, ref address, ref size, (uint)MemoryProtectionType.PAGE_READWRITE, out oldProtect);
+            if (status == 0)
+            {
+                Write<T>(address, data);
+                NtProtectVirtualMemory(process.Handle, ref address, ref size, oldProtect, out _);
+                return true;
+            }
+
+            return false;
+        }
+
+        // TODO: Nt + Check XMemory
+        public bool AllocateMemory(uint size, IntPtr address)
+        {
+            var res = VirtualAllocEx(process.Handle,
+                address, size,
+                (uint)MemoryAllocationType.MEM_COMMIT | (uint)MemoryAllocationType.MEM_RESERVE,
+                (uint)MemoryProtectionType.PAGE_EXECUTE_READWRITE);
+
+            return res != IntPtr.Zero;
+        }
+
+        public IntPtr AllocateMemory(uint size)
+        {
+            return VirtualAllocEx(process.Handle,
+                IntPtr.Zero, size,
+                (uint)MemoryAllocationType.MEM_COMMIT | (uint)MemoryAllocationType.MEM_RESERVE,
+                (uint)MemoryProtectionType.PAGE_EXECUTE_READWRITE);
+        }
+
+        public bool FreeMemory(IntPtr address)
+        {
+            return VirtualFreeEx(process.Handle, address, 0, MemoryFreeType.MEM_RELEASE);
+        }
+
+        //public uint Execute()
+        //{
+        //    // lock
+        //    Write<uint>();
+
+        //}
+
+
+
+        private const int FASM_MEMORY_SIZE = 8192;
+        private const int FASM_PASSES = 100;
+
+        // lock needs to be static as FASM isn't thread safe
+        private static readonly object fasmLock = new object();
+
+        public bool InjectAsm(IEnumerable<string> asm, IntPtr address, bool patchMemProtection = false) // TODO: Add patchMemProtection
+        {
+            lock (fasmLock)
+            {
+                fixed (byte* pBytes = stackalloc byte[FASM_MEMORY_SIZE]) // Выделяем память на стеке и фиксим от сборщика
+                {
+                    string source = "use32\norg 0x" + address.ToString("X08") + "\n" + string.Join("\n", asm); // корректируем под FASM
+                    //string source = $"use32\r\norg 0x{address.ToString("X08")}\r\nret";
+                    //Console.WriteLine("source:" + source);
+
+                    if (FasmAssemble(source, pBytes, FASM_MEMORY_SIZE, FASM_PASSES, IntPtr.Zero) == 0) // Переводим строку в асм инструкции в байтах
+                    {
+                        FasmStateOk fasmState = *(FasmStateOk*)pBytes; // читаем из указателя байты и приводим к структуре FasmStateOk
+                        // Создаем буфер для записи в память асм стаба
+                        var len = (int)fasmState.OutputLength;
+                        byte[] bytesToWrite = new byte[len];
+                        Marshal.Copy(fasmState.OutputData, bytesToWrite, 0, len); // Копируем байты из fasmState в наш буфер для записи через wpm
+
+                        if (patchMemProtection)
+                        {
+                            uint oldProtect = 0;
+                            IntPtr size = (IntPtr)len;
+
+                            NtProtectVirtualMemory(process.Handle, ref address, ref size, PAGE_EXECUTE_READWRITE, out oldProtect);
+                            var status = WriteProcessMemory(process.Handle, address, bytesToWrite, (uint)len, out _);
+                            NtProtectVirtualMemory(process.Handle, ref address, ref size, oldProtect, out _);
+
+                            return status;
+                        }
+
+                        return WriteProcessMemory(process.Handle, address, bytesToWrite, (uint)len, out _);
+                    }
+                    else
+                        return false;
+                }
+            }
         }
     }
 }
 
-//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-//public unsafe bool Read<T>(IntPtr address, out T value) where T : unmanaged
-//{
-//    int size = sizeof(T);
 
-//    fixed (byte* pBuffer = new byte[size])
-//    {
-//        if (WinImports.ReadProcessMemory(Process.GetCurrentProcess().Handle, address, pBuffer, size, out _))
-//        {
-//            value = *(T*)pBuffer;
-//            return true;
-//        }
-//    }
-
-//    value = default;
-//    return false;
-//}
-
-
-//public IntPtr ProcessHwnd = WinImports.OpenProcess((uint)WinImports.ProcessAccessFlags.VirtualMemoryRead, false, (uint)process.Id);
+            /// TODO: https://github.com/Jnnshschl/AmeisenBotX/blob/7f2e3bc892c4aa9ff76d94c25b3721353538b065/AmeisenBotX.Memory/XMemory.cs
+            /// void SuspendMainThread();
+            /// void ResumeMainThread();
+            /// bool ProtectMemory(nint address, uint size, MemoryProtectionFlag memoryProtection, out MemoryProtectionFlag oldMemoryProtection);
+            /// public Rect GetWindowPosition();

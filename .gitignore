@@ -1,0 +1,34 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.pdb
+*.db
+*.log
+*.opendb
+*.VC.db*
+ipch/
+
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Tt]emp/
+*.exe
+*.dll
+
+# Packages
+packages/
+
+# Others
+*.tmp
+*.bak
+*.old
+*.swp
+*.vscode/
+
+#myFolders
+SecurityLayer/
+Tester/
