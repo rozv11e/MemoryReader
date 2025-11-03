@@ -1,8 +1,6 @@
-﻿using Reader.Structures;
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace Reader.Imports.Structures
+namespace WinDeepMem.Imports.Structures
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct PEB_LDR_DATA

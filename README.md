@@ -13,9 +13,9 @@ Provides powerful tools for **memory reading/writing, process analysis, syscall 
 
 - **System Structures**
   - PEB / TEB access and parsing
-  - Import Address Table (IAT) and Thread Local Storage (TLS) inspection *not implemented yet*
+  - Import Address Table (IAT) and Thread Local Storage (TLS) inspection (*not implemented yet*)
 
-- **Syscalls** *not implemented yet*
+- **Syscalls** (*not implemented yet*)
   - Direct system call interface
   - Dynamic syscall number resolution
   - Anti-hook bypass (Nt/Zw call integrity)
@@ -24,6 +24,7 @@ Provides powerful tools for **memory reading/writing, process analysis, syscall 
   - Inline ASM injection and code execution
   - Module enumeration and handle management
   - Remote thread creation and code mapping
+  - injection
 
 ---
 
@@ -31,14 +32,16 @@ Provides powerful tools for **memory reading/writing, process analysis, syscall 
 
 ## 🧩 Requirements
 
-- **.NET Framework 4.7.2+** or (**.NET 8.0** // in future)
+- **.NET 8.0**
 - **Windows 10/11**
 - Visual Studio 2022 or newer
 
 ## ⚡ Quick Example
 
 ```csharp
-using Reader;
+
+// Memory
+using WinDeepMem;
 
 var memory = new MemoryReader(process);
 
@@ -46,3 +49,12 @@ int value = memory.Read<int>(0x7FFDF000);
 Console.WriteLine($"Value: {value}");
 
 process.Write(0x7FFDF000, 12345);
+
+// Injector
+
+using WinDeepMem;
+
+var injector = new Injector(targetProcess, pathToDll);
+injector.Inject(); // just simple injection
+
+

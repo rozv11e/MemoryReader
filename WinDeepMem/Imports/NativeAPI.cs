@@ -1,8 +1,7 @@
-﻿using Reader.Structures;
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using WinDeepMem.Imports.Structures;
 
-namespace Reader.Imports
+namespace WinDeepMem.Imports
 {
     internal class NativeAPI
     {

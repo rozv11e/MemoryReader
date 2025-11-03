@@ -1,17 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Reader.Structures;
-using System.Linq;
 using System.Text;
+using WinDeepMem.Imports.Structures;
+using static WinDeepMem.Imports.NativeAPI;
+using static WinDeepMem.Imports.WinApi;
 
-
-using static Reader.Imports.NativeAPI;
-using static Reader.Imports.WinAPI;
-using Reader.Imports.Structures;
-using System.Collections.Generic;
-
-namespace Reader.Utils
+namespace WinDeepMem
 {
     public unsafe class ProcessReader
     {
@@ -192,7 +186,7 @@ namespace Reader.Utils
             Console.WriteLine($"size:{size:X}");
 
             IMAGE_OPTIONAL_HEADER32 optionalHeader = ntHeader.OptionalHeader;
-            Console.WriteLine(ntHeader.OptionalHeader.DataDirectory[9].ToString("X"));
+            //Console.WriteLine(ntHeader.OptionalHeader.DataDirectory[9].ToString("X"));
 
             int tlsDataDirOffset = 9 * 8;
             IntPtr optionalHeaderPtr = ImageBase + dosHeader.e_lfanew + 4 + 20;

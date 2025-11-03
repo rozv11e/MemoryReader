@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Reader
+﻿namespace WinDeepMem
 {
-    public static class PatternFinder
+    public class PatternFinder
     {
         public static byte[] Transform(string pattern)
         {
@@ -27,7 +25,7 @@ namespace Reader
             }
             return result;
         }
-        
+
         public static bool Find(byte[] data, byte[] pattern, out long offsetFound, long offset = 0)
         {
             offsetFound = -1;

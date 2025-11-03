@@ -1,9 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace Reader.Imports
+namespace WinDeepMem.Imports
 {
-    public unsafe class WinAPI
+    internal unsafe class WinApi
     {
         [Flags]
         public enum ProcessAccessFlags : uint
@@ -109,6 +108,23 @@ namespace Reader.Imports
 
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+
+        public static uint PROCESS_CREATE_THREAD = 0x0002;
+        public static uint PROCESS_QUERY_INFORMATION = 0x0400;
+        public static uint PROCESS_VM_OPERATION = 0x0008;
+        public static uint PROCESS_VM_WRITE = 0x0020;
+        public static uint MEM_COMMIT = 0x1000;
+        public static uint PAGE_READWRITE = 0x04;
+        public static uint INFINITE = 0xFFFFFFFF;
+
+        [DllImport("kernel32.dll")]
+        public static extern uint GetLastError();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetExitCodeThread(IntPtr hThread, out uint lpExitCode);
 
         [DllImport("kernel32.dll")]
         public static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttribute, IntPtr dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, out IntPtr lpThreadId);

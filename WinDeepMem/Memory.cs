@@ -1,17 +1,12 @@
-﻿using Reader.Imports;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Reader.Imports.NativeAPI;
-using static Reader.Imports.WinAPI;
+using static WinDeepMem.Imports.WinApi;
+using static WinDeepMem.Imports.NativeAPI;
 
-namespace Reader
+namespace WinDeepMem
 {
     public unsafe class Memory
     {
@@ -234,7 +229,6 @@ namespace Reader
         {
             if (address == IntPtr.Zero)
                 return false;
-
             IntPtr size = (IntPtr)sizeof(T);
 
             uint oldProtect;
@@ -266,7 +260,7 @@ namespace Reader
             return VirtualAllocEx(process.Handle,
                 IntPtr.Zero, size,
                 (uint)MemoryAllocationType.MEM_COMMIT | (uint)MemoryAllocationType.MEM_RESERVE,
-                (uint)MemoryProtectionType.PAGE_EXECUTE_READWRITE);
+            (uint)MemoryProtectionType.PAGE_EXECUTE_READWRITE);
         }
 
         public bool FreeMemory(IntPtr address)
@@ -289,6 +283,13 @@ namespace Reader
         // lock needs to be static as FASM isn't thread safe
         private static readonly object fasmLock = new object();
 
+        /// <summary>
+        /// !!!Make sure you have FASM.dll
+        /// </summary>
+        /// <param name="asm"></param>
+        /// <param name="address"></param>
+        /// <param name="patchMemProtection"></param>
+        /// <returns></returns>
         public bool InjectAsm(IEnumerable<string> asm, IntPtr address, bool patchMemProtection = false) // TODO: Add patchMemProtection
         {
             lock (fasmLock)
@@ -328,10 +329,3 @@ namespace Reader
         }
     }
 }
-
-
-            /// TODO: https://github.com/Jnnshschl/AmeisenBotX/blob/7f2e3bc892c4aa9ff76d94c25b3721353538b065/AmeisenBotX.Memory/XMemory.cs
-            /// void SuspendMainThread();
-            /// void ResumeMainThread();
-            /// bool ProtectMemory(nint address, uint size, MemoryProtectionFlag memoryProtection, out MemoryProtectionFlag oldMemoryProtection);
-            /// public Rect GetWindowPosition();

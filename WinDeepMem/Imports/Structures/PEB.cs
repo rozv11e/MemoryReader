@@ -1,7 +1,6 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace Reader.Structures
+namespace WinDeepMem.Imports.Structures
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct PEB

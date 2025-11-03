@@ -1,7 +1,6 @@
-﻿using Reader.Structures;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace Reader.Imports.Structures
+namespace WinDeepMem.Imports.Structures
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct IMAGE_DOS_HEADER
