@@ -1,6 +1,7 @@
 ﻿using static WinDeepMem.Imports.WinApi;
 using System.Diagnostics;
 using System.Text;
+
 namespace WinDeepMem
 {
     public class Injector
@@ -15,10 +16,8 @@ namespace WinDeepMem
             mem = new Memory(targetProcess);
         }
 
-        public bool Inject()
+        public bool InjectDll()
         {
-
-
             var hProcess = _process.Handle;
             if (hProcess == null)
             {
@@ -33,9 +32,7 @@ namespace WinDeepMem
             }
 
             byte[] path = Encoding.Unicode.GetBytes(_pathToDll + "\0");
-            //byte[] pathBytes = Encoding.Unicode.GetBytes(_pathToDll + "\0");
-            //uint size = (uint)(_pathToDll.Length + 1) * 2; // Unicode = * 2
-            uint size = (uint)path.Length; // Размер уже с терминатором
+            uint size = (uint)path.Length;
 
             // Allocate memory in remote process
             var pDllPath = VirtualAllocEx(hProcess,
@@ -55,7 +52,6 @@ namespace WinDeepMem
             Console.WriteLine("[Debug] pDllPath: 0x" + pDllPath.ToString("X"));
 
             // for LoadLibraryW (UTF-16) - Unicode || LoadLibraryA (ANSI) - Default
-            //byte[] path = Encoding.Unicode.GetBytes(_pathToDll);
             mem.WriteBytes(pDllPath, path);
             Thread.Sleep(500);
 
@@ -111,10 +107,18 @@ namespace WinDeepMem
             var error = GetLastError();
             Console.WriteLine("[Debug] LastError: " + error);
 
-            //VirtualFreeEx(handle, pDllPath, 0, MemoryFreeType.MEM_RELEASE);
+            VirtualFreeEx(hProcess, pDllPath, 0, MemoryFreeType.MEM_RELEASE);
 
             return true;
         }
+
+
+        //public bool ManualMapping()
+        //{
+        //    byte[] dll = File.ReadAllBytes(_pathToDll);
+
+        //    var pReader = new ProcessReader();
+        //}
 
         // TODO: Unload
     }

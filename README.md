@@ -1,6 +1,6 @@
-# WinMemCore
+# WinDeepMem
 
-A low-level **Windows memory and system framework** for .NET developers.  
+A low-level **Windows memory and system library** for .NET developers.  
 Provides powerful tools for **memory reading/writing, process analysis, syscall invocation, IAT/TLS inspection, and assembly-level operations**.
 ---
 
@@ -51,7 +51,6 @@ Console.WriteLine($"Value: {value}");
 process.Write(0x7FFDF000, 12345);
 
 // Injector
-
 using WinDeepMem;
 
 var injector = new Injector(targetProcess, pathToDll);

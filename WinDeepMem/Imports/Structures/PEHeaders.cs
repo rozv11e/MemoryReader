@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 
 namespace WinDeepMem.Imports.Structures
 {
@@ -103,5 +104,33 @@ namespace WinDeepMem.Imports.Structures
         public uint SizeOfZeroFill;
         public uint Characteristics;
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct IMAGE_SECTION_HEADER
+    {
+        public fixed byte Name[8];           // Имя секции (8 байт, например ".text")
+
+        public uint VirtualSize;             // Размер секции в ПАМЯТИ
+        public uint VirtualAddress;          // RVA - куда загружать в памяти
+        public uint SizeOfRawData;           // Размер секции в ФАЙЛЕ
+        public uint PointerToRawData;        // Offset в ФАЙЛЕ, где лежат данные
+        public uint PointerToRelocations;    // Для .obj файлов (обычно 0)
+        public uint PointerToLinenumbers;    // Устаревшее (обычно 0)
+        public ushort NumberOfRelocations;   // Для .obj файлов (обычно 0)
+        public ushort NumberOfLinenumbers;   // Устаревшее (обычно 0)
+        public uint Characteristics;         // Флаги (executable, readable, writable)
+
+        public string SectionName //  свойство не меняет layout
+        {
+            get
+            {
+                fixed (byte* ptr = Name)
+                {
+                    return Encoding.ASCII.GetString(ptr, 8).TrimEnd('\0');
+                }
+            }
+        }
+    }
+    // Всего = 40 байт
 
 }
